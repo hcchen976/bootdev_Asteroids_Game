@@ -1,10 +1,10 @@
-from sys import float_repr_style
+from sys import float_repr_style  # ruff: ignore[unused-import]
 
 import pygame
 
+import constants
 from circleshape import CircleShape
 from constants import LINE_WIDTH, PLAYER_RADIUS, PLAYER_SPEED, PLAYER_TURN_SPEED
-import constants
 from shot import Shot
 
 
@@ -37,6 +37,7 @@ class Player(CircleShape):
 
     def update(self, dt: float) -> None:
         keys = pygame.key.get_pressed()
+        self.cooldown -= dt
 
         if keys[pygame.K_a]:
             self.rotate(dt * -1)
@@ -47,6 +48,9 @@ class Player(CircleShape):
         if keys[pygame.K_s]:
             self.move(dt * -1)
         if keys[pygame.K_SPACE]:
+            if self.cooldown > 0:
+                return
+            self.cooldown = constants.PLAYER_SHOOT_COOLDOWN_SECONDS
             self.shoot()
 
     def shoot(self):
